@@ -28,8 +28,7 @@ end
 function love.update(dt)
   mouse.x = love.mouse.getX()
   mouse.y = love.mouse.getY()
-  
-end
+  end
 
 function love.mousepressed(x,y,button)
   if mode == "select" and discHovered ~= 0 then
@@ -51,18 +50,23 @@ end
 
 
 function love.draw()
-  discHovered = 0
-  towerHovered = 0
-  drawTower(1)
-  drawTower(2)
-  drawTower(3)  
   
-  if discPickedUp > 0 then
-    love.graphics.setColor(255,255,255,255)
-    discWidth = discPickedUp * 10 + 40
-    discHeight = discPickedUp*3 + 10
-  
-    love.graphics.rectangle("fill", mouse.x - discWidth / 2, mouse.y - discHeight / 2, discWidth, discHeight)
+  if gameIsWon() then
+    love.graphics.print("You won the game.", 350,300)
+  else
+    discHovered = 0
+    towerHovered = 0
+    drawTower(1)
+    drawTower(2)
+    drawTower(3)  
+    
+    if discPickedUp > 0 then
+      love.graphics.setColor(255,255,255,255)
+      discWidth = discPickedUp * 10 + 40
+      discHeight = discPickedUp*3 + 10
+    
+      love.graphics.rectangle("fill", mouse.x - discWidth / 2, mouse.y - discHeight / 2, discWidth, discHeight)
+    end
   end
 end
 
@@ -138,4 +142,8 @@ function isDropValid(discPicked, towerNum)
     end
   end
   return valid
+end
+
+function gameIsWon()
+  return #towers[3] == 8
 end
