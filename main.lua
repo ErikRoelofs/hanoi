@@ -11,7 +11,7 @@ function love.draw()
   drawTower(2)
   drawTower(3)
   
-  drawDisc(8)
+  drawDisc(8, 2)
 end
 
 function drawTower(towerNum)
@@ -19,6 +19,6 @@ function drawTower(towerNum)
     love.graphics.rectangle("fill", 170 + (towerNum-1)*200,100,10,400)
 end
 
-function drawDisc(size)
-  love.graphics.rectangle("fill", 175 - ((size * 10 + 40) / 2), 465, size * 10 + 40, size*3 + 10)
+function drawDisc(size, tower)
+  love.graphics.rectangle("fill", ((tower-1)*200) + 175 - ((size * 10 + 40) / 2), 465, size * 10 + 40, size*3 + 10)
 end
