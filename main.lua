@@ -92,14 +92,9 @@ function drawTower(towerNum)
     local heightOffset = 500
     
     if mode == "place" then
-      if mouse.x > 100 + (towerNum-1)*200 and mouse.x < 100 + (towerNum-1)*200 + 150 
-        and mouse.y > heightOffset and mouse.y < heightOffset + 20 then                  
+      if hoversTower(towerNum) then
         handleTowerHover(discPickedUp, towerNum)      
-      end      
-      if mouse.x > 170 + (towerNum-1)*200 and mouse.x < 170 + (towerNum-1)*200 + 10 
-        and mouse.y > 100 and mouse.y < 100 + 400 then        
-        handleTowerHover(discPickedUp, towerNum)        
-      end      
+      end
     end
     love.graphics.rectangle("fill", 100 + (towerNum-1)*200,heightOffset,150,20)
     love.graphics.rectangle("fill", 170 + (towerNum-1)*200,100,10,400)      
@@ -110,6 +105,17 @@ function drawTower(towerNum)
     
 end
 
+function hoversTower(towerNum)
+  if mouse.x > 100 + (towerNum-1)*200 and mouse.x < 100 + (towerNum-1)*200 + 150 
+    and mouse.y > 500 and mouse.y < 500 + 20 then                  
+    return true
+  end      
+  if mouse.x > 170 + (towerNum-1)*200 and mouse.x < 170 + (towerNum-1)*200 + 10 
+    and mouse.y > 100 and mouse.y < 100 + 400 then        
+    return true
+  end        
+end
+
 function drawDisc(size, tower, heightOffset)
   love.graphics.setColor(discBaseColor)
   local discWidth, discHeight = discDimensions(size)
@@ -118,14 +124,8 @@ function drawDisc(size, tower, heightOffset)
   
   if mode == "select" then
     if mouse.x > centerOfTower - ( discWidth / 2) and mouse.x <  centerOfTower - ( discWidth / 2) + discWidth
-      and mouse.y > heightOffset and mouse.y < heightOffset + discHeight then
-        
-      local topDisk = true
-      for _, disc in ipairs(towers[tower]) do
-        topDisk = (disc == size)
-      end
-        
-      if topDisk then
+      and mouse.y > heightOffset and mouse.y < heightOffset + discHeight then        
+      if isTopDisk(size, tower) then
         love.graphics.setColor(discGoodHighlightColor)
         discHovered = size
       else
@@ -138,6 +138,14 @@ function drawDisc(size, tower, heightOffset)
   love.graphics.rectangle("fill", centerOfTower - ( discWidth / 2), heightOffset, discWidth, discHeight)
   
   return heightOffset
+end
+
+function isTopDisk(size, tower)
+  local topDisk = true
+  for _, disc in ipairs(towers[tower]) do
+    topDisk = (disc == size)
+  end
+  return topDisk
 end
 
 function handleTowerHover(discPickedUp, towerNum)
