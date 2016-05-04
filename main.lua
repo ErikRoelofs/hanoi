@@ -1,9 +1,17 @@
+if arg[#arg] == "-debug" then debug = true else debug = false end
+if debug then require("mobdebug").start() end
+
 function love.load()
   towers = {
     {},
     {},
     {}
   }
+  
+  table.insert(towers[1], 8)
+  table.insert(towers[1], 7)
+  table.insert(towers[1], 6)
+
 end
 
 function love.update(dt)
@@ -15,25 +23,27 @@ function love.draw()
   drawTower(2)
   drawTower(3)
   
-  drawDisc(8, 2)
-  drawDisc(7, 1)
-  drawDisc(6, 1)
 end
 
 function drawTower(towerNum)
-    love.graphics.rectangle("fill", 100 + (towerNum-1)*200,500,150,20)
+    
+    heightOffset = 500
+    
+    love.graphics.rectangle("fill", 100 + (towerNum-1)*200,heightOffset,150,20)
     love.graphics.rectangle("fill", 170 + (towerNum-1)*200,100,10,400)
+    
+    for _, disc in ipairs(towers[towerNum]) do
+      drawDisc(disc, towerNum, heightOffset)
+      heightOffset = heightOffset - discHeight - 1
+    end
+    
 end
 
-function drawDisc(size, tower)
-  table.insert(towers[tower], size)
+function drawDisc(size, tower, heightOffset)
   discWidth = size * 10 + 40
   discHeight = size*3 + 10
   centerOfTower = (tower-1)*200 + 175
-  heightOffset = 500 - 1
-  for _, discSize in ipairs(towers[tower]) do
-    heightOffset = heightOffset - discSize *3 + 10
-  end
+  heightOffset = heightOffset - discHeight - 1
   
   love.graphics.rectangle("fill", centerOfTower - ( discWidth / 2), heightOffset, discWidth, discHeight)
 end
