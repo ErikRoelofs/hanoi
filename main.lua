@@ -8,6 +8,14 @@ function love.load()
     {}
   }
   
+  towerBaseColor = {150,75,75,255}
+  towerGoodHighlightColor = {150,75,255,255}
+  towerBadHighlightColor = {255,75,75,255}
+  
+  discBaseColor = {75,150,75,255}
+  discGoodHighlightColor = {75,150,255,255}
+  discBadHighlightColor = {255,150,75,255}
+
   numDiscs = 8
   
   local i = numDiscs
@@ -60,7 +68,7 @@ function love.draw()
     drawTower(3)  
     
     if discPickedUp > 0 then
-      love.graphics.setColor(255,255,255,255)
+      love.graphics.setColor(discBaseColor)
       local discWidth = discPickedUp * 10 + 40
       local discHeight = discPickedUp*3 + 10
     
@@ -70,7 +78,7 @@ function love.draw()
 end
 
 function drawTower(towerNum)    
-    love.graphics.setColor(255,255,255,255)
+    love.graphics.setColor(towerBaseColor)
     
     local heightOffset = 500
     
@@ -94,11 +102,11 @@ function drawTower(towerNum)
 end
 
 function drawDisc(size, tower, heightOffset)
-  love.graphics.setColor(255,255,255,255)
+  love.graphics.setColor(discBaseColor)
   local discWidth = size * 10 + 40
   local discHeight = size*3 + 10
   local centerOfTower = (tower-1)*200 + 175
-  local heightOffset = heightOffset - discHeight - 1
+  heightOffset = heightOffset - discHeight - 1
   
   if mode == "select" then
     if mouse.x > centerOfTower - ( discWidth / 2) and mouse.x <  centerOfTower - ( discWidth / 2) + discWidth
@@ -110,13 +118,13 @@ function drawDisc(size, tower, heightOffset)
       end
         
       if topDisk then
-        love.graphics.setColor(0,0,255,255)
+        love.graphics.setColor(discGoodHighlightColor)
         discHovered = size
       else
-        love.graphics.setColor(255,0,0,255)
+        love.graphics.setColor(discBadHighlightColor)
       end
     else
-      love.graphics.setColor(255,255,255,255)
+      love.graphics.setColor(discBaseColor)
     end
   end
   love.graphics.rectangle("fill", centerOfTower - ( discWidth / 2), heightOffset, discWidth, discHeight)
@@ -127,9 +135,9 @@ end
 function handleTowerHover(discPickedUp, towerNum)
   if isDropValid(discPickedUp, towerNum) then
     towerHovered = towerNum
-    love.graphics.setColor(0,0,255,255)
+    love.graphics.setColor(towerGoodHighlightColor)
   else
-    love.graphics.setColor(255,0,0,255)
+    love.graphics.setColor(towerBadHighlightColor)
   end  
 end
 
