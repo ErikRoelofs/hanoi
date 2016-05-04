@@ -52,6 +52,7 @@ function love.draw()
   drawTower(3)  
   
   if discPickedUp > 0 then
+    love.graphics.setColor(255,255,255,255)
     discWidth = discPickedUp * 10 + 40
     discHeight = discPickedUp*3 + 10
   
@@ -60,11 +61,22 @@ function love.draw()
 end
 
 function drawTower(towerNum)    
+    love.graphics.setColor(255,255,255,255)
+    
     heightOffset = 500
     
-    love.graphics.setColor(255,255,255,255)
+    if mode == "place" then
+      if mouse.x > 100 + (towerNum-1)*200 and mouse.x < 100 + (towerNum-1)*200 + 150 
+        and mouse.y > heightOffset and mouse.y < heightOffset + 20 then
+        love.graphics.setColor(0,0,255,255)
+      end      
+      if mouse.x > 170 + (towerNum-1)*200 and mouse.x < 170 + (towerNum-1)*200 + 10 
+        and mouse.y > 100 and mouse.y < 100 + 400 then
+        love.graphics.setColor(0,0,255,255)
+      end      
+    end
     love.graphics.rectangle("fill", 100 + (towerNum-1)*200,heightOffset,150,20)
-    love.graphics.rectangle("fill", 170 + (towerNum-1)*200,100,10,400)
+    love.graphics.rectangle("fill", 170 + (towerNum-1)*200,100,10,400)      
     
     for _, disc in ipairs(towers[towerNum]) do
       heightOffset = drawDisc(disc, towerNum, heightOffset)
@@ -73,14 +85,15 @@ function drawTower(towerNum)
 end
 
 function drawDisc(size, tower, heightOffset)
+  love.graphics.setColor(255,255,255,255)
   discWidth = size * 10 + 40
   discHeight = size*3 + 10
   centerOfTower = (tower-1)*200 + 175
   heightOffset = heightOffset - discHeight - 1
   
   if mode == "select" then
-    if mouse.x > centerOfTower - ( discWidth / 2) and mouse.x <  centerOfTower - ( discWidth / 2) + discWidth and
-      mouse.y > heightOffset and mouse.y < heightOffset + discHeight then
+    if mouse.x > centerOfTower - ( discWidth / 2) and mouse.x <  centerOfTower - ( discWidth / 2) + discWidth
+      and mouse.y > heightOffset and mouse.y < heightOffset + discHeight then
         
       topDisk = true
       for _, disc in ipairs(towers[tower]) do
