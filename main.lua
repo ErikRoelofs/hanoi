@@ -69,8 +69,7 @@ function love.draw()
     
     if discPickedUp > 0 then
       love.graphics.setColor(discBaseColor)
-      local discWidth = discPickedUp * 10 + 40
-      local discHeight = discPickedUp*3 + 10
+      local discWidth, discHeight  = discDimensions(discPickedUp)
     
       love.graphics.rectangle("fill", mouse.x - discWidth / 2, mouse.y - discHeight / 2, discWidth, discHeight)
     end
@@ -103,8 +102,7 @@ end
 
 function drawDisc(size, tower, heightOffset)
   love.graphics.setColor(discBaseColor)
-  local discWidth = size * 10 + 40
-  local discHeight = size*3 + 10
+  local discWidth, discHeight = discDimensions(size)
   local centerOfTower = (tower-1)*200 + 175
   heightOffset = heightOffset - discHeight - 1
   
@@ -153,4 +151,8 @@ end
 
 function gameIsWon()
   return #towers[3] == numDiscs
+end
+
+function discDimensions(size)
+  return size * 10 + 40, size *3 + 10
 end
