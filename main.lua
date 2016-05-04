@@ -21,9 +21,13 @@ function love.load()
   
   mouse = { x = 0, y = 0 }  
   mode = "select"  
-  discHovered = 0
-  discPickedUp = 0
+  resetHover()
+  discPickedUp = 0  
   
+end
+
+function resetHover()
+  discHovered = 0
   towerHovered = 0
 end
 
@@ -71,8 +75,7 @@ function love.draw()
   if gameIsWon() then
     love.graphics.print("You won the game.", 350,300)
   else
-    discHovered = 0
-    towerHovered = 0
+    resetHover()
     drawTower(1)
     drawTower(2)
     drawTower(3)  
