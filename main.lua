@@ -17,10 +17,13 @@ function love.load()
   table.insert(towers[1], 2)
   table.insert(towers[1], 1)
 
+  mouse = { x = 0, y = 0 }
+
 end
 
 function love.update(dt)
-  
+  mouse.x = love.mouse.getX()
+  mouse.y = love.mouse.getY()
 end
 
 function love.draw()
