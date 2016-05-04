@@ -27,7 +27,7 @@ end
 function love.update(dt)
   mouse.x = love.mouse.getX()
   mouse.y = love.mouse.getY()
-  end
+end
 
 function love.mousepressed(x,y,button)
   if mode == "select" and discHovered ~= 0 then
@@ -61,8 +61,8 @@ function love.draw()
     
     if discPickedUp > 0 then
       love.graphics.setColor(255,255,255,255)
-      discWidth = discPickedUp * 10 + 40
-      discHeight = discPickedUp*3 + 10
+      local discWidth = discPickedUp * 10 + 40
+      local discHeight = discPickedUp*3 + 10
     
       love.graphics.rectangle("fill", mouse.x - discWidth / 2, mouse.y - discHeight / 2, discWidth, discHeight)
     end
@@ -72,7 +72,7 @@ end
 function drawTower(towerNum)    
     love.graphics.setColor(255,255,255,255)
     
-    heightOffset = 500
+    local heightOffset = 500
     
     if mode == "place" then
       if mouse.x > 100 + (towerNum-1)*200 and mouse.x < 100 + (towerNum-1)*200 + 150 
@@ -95,16 +95,16 @@ end
 
 function drawDisc(size, tower, heightOffset)
   love.graphics.setColor(255,255,255,255)
-  discWidth = size * 10 + 40
-  discHeight = size*3 + 10
-  centerOfTower = (tower-1)*200 + 175
-  heightOffset = heightOffset - discHeight - 1
+  local discWidth = size * 10 + 40
+  local discHeight = size*3 + 10
+  local centerOfTower = (tower-1)*200 + 175
+  local heightOffset = heightOffset - discHeight - 1
   
   if mode == "select" then
     if mouse.x > centerOfTower - ( discWidth / 2) and mouse.x <  centerOfTower - ( discWidth / 2) + discWidth
       and mouse.y > heightOffset and mouse.y < heightOffset + discHeight then
         
-      topDisk = true
+      local topDisk = true
       for _, disc in ipairs(towers[tower]) do
         topDisk = (disc == size)
       end
@@ -134,7 +134,7 @@ function handleTowerHover(discPickedUp, towerNum)
 end
 
 function isDropValid(discPicked, towerNum)
-  valid = true
+  local valid = true
   for _, disc in ipairs(towers[towerNum]) do          
     if disc < discPicked then
       valid = false
