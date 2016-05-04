@@ -17,12 +17,7 @@ function love.load()
   discBadHighlightColor = {255,150,75,255}
 
   numDiscs = 8
-  
-  local i = numDiscs
-  while i > 0 do
-    table.insert(towers[1], i)
-    i = i - 1
-  end
+  makeDiscs(numDiscs)
   
   mouse = { x = 0, y = 0 }  
   mode = "select"  
@@ -32,6 +27,14 @@ function love.load()
   towerHovered = 0
 end
 
+function makeDiscs(amount)
+  local i = amount
+  while i > 0 do
+    table.insert(towers[1], i)
+    i = i - 1
+  end
+end
+
 function love.update(dt)
   mouse.x = love.mouse.getX()
   mouse.y = love.mouse.getY()
@@ -39,22 +42,29 @@ end
 
 function love.mousepressed(x,y,button)
   if mode == "select" and discHovered ~= 0 then
+    pickupDisc(discHovered)
     mode = "place"
-    for tower, discs in ipairs(towers) do
-      for key, disc in ipairs(discs) do
-        if disc == discHovered then
-          table.remove(towers[tower], key)
-          discPickedUp = discHovered
-        end
-      end
-    end  
-  elseif mode == "place" and towerHovered ~= 0 then
-    table.insert(towers[towerHovered], discPickedUp)
-    mode = "select"
-    discPickedUp = 0
+  elseif mode == "place" and towerHovered ~= 0 then    
+    dropDisc()
+    mode = "select"    
   end
 end
 
+function pickupDisc(discToPick)
+  for tower, discs in ipairs(towers) do
+    for key, disc in ipairs(discs) do
+      if disc == discToPick then
+        table.remove(towers[tower], key)
+        discPickedUp = discToPick
+      end
+    end
+  end
+end
+
+function dropDisc()
+  table.insert(towers[towerHovered], discPickedUp)
+  discPickedUp = 0
+end
 
 function love.draw()
   
