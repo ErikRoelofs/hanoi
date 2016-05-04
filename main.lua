@@ -73,38 +73,12 @@ function drawTower(towerNum)
     
     if mode == "place" then
       if mouse.x > 100 + (towerNum-1)*200 and mouse.x < 100 + (towerNum-1)*200 + 150 
-        and mouse.y > heightOffset and mouse.y < heightOffset + 20 then
-          
-        valid = true
-        for _, disc in ipairs(towers[towerNum]) do          
-          if disc < discPickedUp then
-            valid = false
-          end
-        end
-        
-        if valid then
-          towerHovered = towerNum
-          love.graphics.setColor(0,0,255,255)
-        else
-          love.graphics.setColor(255,0,0,255)
-        end
-        
+        and mouse.y > heightOffset and mouse.y < heightOffset + 20 then                  
+        handleTowerHover(discPickedUp, towerNum)      
       end      
       if mouse.x > 170 + (towerNum-1)*200 and mouse.x < 170 + (towerNum-1)*200 + 10 
-        and mouse.y > 100 and mouse.y < 100 + 400 then
-        valid = true
-        for _, disc in ipairs(towers[towerNum]) do          
-          if disc < discPickedUp then
-            valid = false
-          end
-        end
-        
-        if valid then
-          towerHovered = towerNum
-          love.graphics.setColor(0,0,255,255)
-        else
-          love.graphics.setColor(255,0,0,255)
-        end
+        and mouse.y > 100 and mouse.y < 100 + 400 then        
+        handleTowerHover(discPickedUp, towerNum)        
       end      
     end
     love.graphics.rectangle("fill", 100 + (towerNum-1)*200,heightOffset,150,20)
@@ -145,4 +119,23 @@ function drawDisc(size, tower, heightOffset)
   love.graphics.rectangle("fill", centerOfTower - ( discWidth / 2), heightOffset, discWidth, discHeight)
   
   return heightOffset
+end
+
+function handleTowerHover(discPickedUp, towerNum)
+  if isDropValid(discPickedUp, towerNum) then
+    towerHovered = towerNum
+    love.graphics.setColor(0,0,255,255)
+  else
+    love.graphics.setColor(255,0,0,255)
+  end  
+end
+
+function isDropValid(discPicked, towerNum)
+  valid = true
+  for _, disc in ipairs(towers[towerNum]) do          
+    if disc < discPicked then
+      valid = false
+    end
+  end
+  return valid
 end
