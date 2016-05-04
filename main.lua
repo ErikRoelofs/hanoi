@@ -13,6 +13,7 @@ function love.draw()
   
   drawDisc(8, 2)
   drawDisc(7, 1)
+  drawDisc(6, 1)
 end
 
 function drawTower(towerNum)
