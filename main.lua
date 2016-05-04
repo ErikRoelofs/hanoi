@@ -1,5 +1,9 @@
 function love.load()
-  
+  towers = {
+    {},
+    {},
+    {}
+  }
 end
 
 function love.update(dt)
@@ -22,10 +26,14 @@ function drawTower(towerNum)
 end
 
 function drawDisc(size, tower)
+  table.insert(towers[tower], size)
   discWidth = size * 10 + 40
   discHeight = size*3 + 10
   centerOfTower = (tower-1)*200 + 175
-  heightOffset = 500 - discHeight - 1
+  heightOffset = 500 - 1
+  for _, discSize in ipairs(towers[tower]) do
+    heightOffset = heightOffset - discSize *3 + 10
+  end
   
   love.graphics.rectangle("fill", centerOfTower - ( discWidth / 2), heightOffset, discWidth, discHeight)
 end
