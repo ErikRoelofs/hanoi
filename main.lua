@@ -17,8 +17,7 @@ function love.load()
   table.insert(towers[1], 2)
   table.insert(towers[1], 1)
 
-  mouse = { x = 0, y = 0 }
-
+  mouse = { x = 0, y = 0 }  
 end
 
 function love.update(dt)
@@ -30,18 +29,17 @@ function love.draw()
   drawTower(1)
   drawTower(2)
   drawTower(3)
-  
 end
 
-function drawTower(towerNum)
-    
+function drawTower(towerNum)    
     heightOffset = 500
     
+    love.graphics.setColor(255,255,255,255)
     love.graphics.rectangle("fill", 100 + (towerNum-1)*200,heightOffset,150,20)
     love.graphics.rectangle("fill", 170 + (towerNum-1)*200,100,10,400)
     
     for _, disc in ipairs(towers[towerNum]) do
-      heightOffset = drawDisc(disc, towerNum, heightOffset)       
+      heightOffset = drawDisc(disc, towerNum, heightOffset)
     end
     
 end
@@ -51,6 +49,13 @@ function drawDisc(size, tower, heightOffset)
   discHeight = size*3 + 10
   centerOfTower = (tower-1)*200 + 175
   heightOffset = heightOffset - discHeight - 1
+  
+  if mouse.x > centerOfTower - ( discWidth / 2) and mouse.x <  centerOfTower - ( discWidth / 2) + discWidth and
+    mouse.y > heightOffset and mouse.y < heightOffset + discHeight then
+    love.graphics.setColor(0,0,255,255) 
+  else
+    love.graphics.setColor(255,255,255,255)
+  end
   
   love.graphics.rectangle("fill", centerOfTower - ( discWidth / 2), heightOffset, discWidth, discHeight)
   
