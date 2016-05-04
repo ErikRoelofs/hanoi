@@ -22,19 +22,20 @@ function love.load()
   mouse = { x = 0, y = 0 }  
   mode = "select"  
   resetHover()
-  discPickedUp = 0  
+  discPickedUp = nil
   
 end
 
 function resetHover()
-  discHovered = 0
-  towerHovered = 0
+  discHovered = nil
+  towerHovered = nil
 end
 
 function makeDiscs(amount)
   local i = amount
   while i > 0 do
-    table.insert(towers[1], i)
+    local disc = { size = i }
+    table.insert(towers[1], disc)
     i = i - 1
   end
 end
@@ -45,10 +46,10 @@ function love.update(dt)
 end
 
 function love.mousepressed(x,y,button)
-  if mode == "select" and discHovered ~= 0 then
+  if mode == "select" and discHovered ~= nil then
     pickupDisc(discHovered)
     mode = "place"
-  elseif mode == "place" and towerHovered ~= 0 then    
+  elseif mode == "place" and towerHovered ~= nil then    
     dropDisc()
     mode = "select"    
   end
@@ -58,8 +59,7 @@ function pickupDisc(discToPick)
   for tower, discs in ipairs(towers) do
     for key, disc in ipairs(discs) do
       if disc == discToPick then
-        table.remove(towers[tower], key)
-        discPickedUp = discToPick
+        discPickedUp = table.remove(towers[tower], key)        
       end
     end
   end
@@ -67,7 +67,7 @@ end
 
 function dropDisc()
   table.insert(towers[towerHovered], discPickedUp)
-  discPickedUp = 0
+  discPickedUp = nil
 end
 
 function love.draw()
@@ -80,7 +80,7 @@ function love.draw()
     drawTower(2)
     drawTower(3)  
     
-    if discPickedUp > 0 then
+    if discPickedUp then
       love.graphics.setColor(discBaseColor)
       local discWidth, discHeight  = discDimensions(discPickedUp)
     
@@ -119,18 +119,18 @@ function hoversTower(towerNum)
   end        
 end
 
-function drawDisc(size, tower, heightOffset)
+function drawDisc(disc, tower, heightOffset)
   love.graphics.setColor(discBaseColor)
-  local discWidth, discHeight = discDimensions(size)
+  local discWidth, discHeight = discDimensions(disc)
   local centerOfTower = (tower-1)*200 + 175
   heightOffset = heightOffset - discHeight - 1
   
   if mode == "select" then
     if mouse.x > centerOfTower - ( discWidth / 2) and mouse.x <  centerOfTower - ( discWidth / 2) + discWidth
       and mouse.y > heightOffset and mouse.y < heightOffset + discHeight then        
-      if isTopDisk(size, tower) then
+      if isTopDisk(disc, tower) then
         love.graphics.setColor(discGoodHighlightColor)
-        discHovered = size
+        discHovered = disc
       else
         love.graphics.setColor(discBadHighlightColor)
       end
@@ -143,10 +143,10 @@ function drawDisc(size, tower, heightOffset)
   return heightOffset
 end
 
-function isTopDisk(size, tower)
+function isTopDisk(targetDisc, tower)
   local topDisk = true
   for _, disc in ipairs(towers[tower]) do
-    topDisk = (disc == size)
+    topDisk = (disc == targetDisc)
   end
   return topDisk
 end
@@ -163,7 +163,7 @@ end
 function isDropValid(discPicked, towerNum)
   local valid = true
   for _, disc in ipairs(towers[towerNum]) do          
-    if disc < discPicked then
+    if disc.size < discPicked.size then
       valid = false
     end
   end
@@ -174,6 +174,6 @@ function gameIsWon()
   return #towers[3] == numDiscs
 end
 
-function discDimensions(size)
-  return size * 10 + 40, size *3 + 10
+function discDimensions(disc)
+  return disc.size * 10 + 40, disc.size *3 + 10
 end
