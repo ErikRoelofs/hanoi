@@ -11,6 +11,11 @@ function love.load()
   table.insert(towers[1], 8)
   table.insert(towers[1], 7)
   table.insert(towers[1], 6)
+  table.insert(towers[1], 5)
+  table.insert(towers[1], 4)
+  table.insert(towers[1], 3)
+  table.insert(towers[1], 2)
+  table.insert(towers[1], 1)
 
 end
 
