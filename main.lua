@@ -33,8 +33,7 @@ function drawTower(towerNum)
     love.graphics.rectangle("fill", 170 + (towerNum-1)*200,100,10,400)
     
     for _, disc in ipairs(towers[towerNum]) do
-      drawDisc(disc, towerNum, heightOffset)
-      heightOffset = heightOffset - discHeight - 1
+      heightOffset = drawDisc(disc, towerNum, heightOffset)       
     end
     
 end
@@ -46,4 +45,6 @@ function drawDisc(size, tower, heightOffset)
   heightOffset = heightOffset - discHeight - 1
   
   love.graphics.rectangle("fill", centerOfTower - ( discWidth / 2), heightOffset, discWidth, discHeight)
+  
+  return heightOffset
 end
