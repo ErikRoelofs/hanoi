@@ -21,5 +21,10 @@ function drawTower(towerNum)
 end
 
 function drawDisc(size, tower)
-  love.graphics.rectangle("fill", ((tower-1)*200) + 175 - ((size * 10 + 40) / 2), 500 - (size*3 + 10) - 1, size * 10 + 40, size*3 + 10)
+  discWidth = size * 10 + 40
+  discHeight = size*3 + 10
+  centerOfTower = (tower-1)*200 + 175
+  heightOffset = 500 - discHeight - 1
+  
+  love.graphics.rectangle("fill", centerOfTower - ( discWidth / 2), heightOffset, discWidth, discHeight)
 end
