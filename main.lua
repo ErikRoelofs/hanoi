@@ -22,6 +22,7 @@ function love.load()
   discHovered = 0
   discPickedUp = 0
   
+  towerHovered = 0
 end
 
 function love.update(dt)
@@ -31,7 +32,7 @@ function love.update(dt)
 end
 
 function love.mousepressed(x,y,button)
-  if discHovered ~= 0 then
+  if mode == "select" and discHovered ~= 0 then
     mode = "place"
     for tower, discs in ipairs(towers) do
       for key, disc in ipairs(discs) do
@@ -40,13 +41,18 @@ function love.mousepressed(x,y,button)
           discPickedUp = discHovered
         end
       end
-    end
+    end  
+  elseif mode == "place" and towerHovered ~= 0 then
+    table.insert(towers[towerHovered], discPickedUp)
+    mode = "select"
+    discPickedUp = 0
   end
 end
 
 
 function love.draw()
   discHovered = 0
+  towerHovered = 0
   drawTower(1)
   drawTower(2)
   drawTower(3)  
@@ -68,10 +74,12 @@ function drawTower(towerNum)
     if mode == "place" then
       if mouse.x > 100 + (towerNum-1)*200 and mouse.x < 100 + (towerNum-1)*200 + 150 
         and mouse.y > heightOffset and mouse.y < heightOffset + 20 then
+          towerHovered = towerNum
         love.graphics.setColor(0,0,255,255)
       end      
       if mouse.x > 170 + (towerNum-1)*200 and mouse.x < 170 + (towerNum-1)*200 + 10 
         and mouse.y > 100 and mouse.y < 100 + 400 then
+        towerHovered = towerNum
         love.graphics.setColor(0,0,255,255)
       end      
     end
