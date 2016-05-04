@@ -8,15 +8,14 @@ function love.load()
     {}
   }
   
-  table.insert(towers[1], 8)
-  table.insert(towers[1], 7)
-  table.insert(towers[1], 6)
-  table.insert(towers[1], 5)
-  table.insert(towers[1], 4)
-  table.insert(towers[1], 3)
-  table.insert(towers[1], 2)
-  table.insert(towers[1], 1)
-
+  numDiscs = 8
+  
+  local i = numDiscs
+  while i > 0 do
+    table.insert(towers[1], i)
+    i = i - 1
+  end
+  
   mouse = { x = 0, y = 0 }  
   mode = "select"  
   discHovered = 0
@@ -145,5 +144,5 @@ function isDropValid(discPicked, towerNum)
 end
 
 function gameIsWon()
-  return #towers[3] == 8
+  return #towers[3] == numDiscs
 end
