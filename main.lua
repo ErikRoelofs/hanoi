@@ -74,13 +74,37 @@ function drawTower(towerNum)
     if mode == "place" then
       if mouse.x > 100 + (towerNum-1)*200 and mouse.x < 100 + (towerNum-1)*200 + 150 
         and mouse.y > heightOffset and mouse.y < heightOffset + 20 then
+          
+        valid = true
+        for _, disc in ipairs(towers[towerNum]) do          
+          if disc < discPickedUp then
+            valid = false
+          end
+        end
+        
+        if valid then
           towerHovered = towerNum
-        love.graphics.setColor(0,0,255,255)
+          love.graphics.setColor(0,0,255,255)
+        else
+          love.graphics.setColor(255,0,0,255)
+        end
+        
       end      
       if mouse.x > 170 + (towerNum-1)*200 and mouse.x < 170 + (towerNum-1)*200 + 10 
         and mouse.y > 100 and mouse.y < 100 + 400 then
-        towerHovered = towerNum
-        love.graphics.setColor(0,0,255,255)
+        valid = true
+        for _, disc in ipairs(towers[towerNum]) do          
+          if disc < discPickedUp then
+            valid = false
+          end
+        end
+        
+        if valid then
+          towerHovered = towerNum
+          love.graphics.setColor(0,0,255,255)
+        else
+          love.graphics.setColor(255,0,0,255)
+        end
       end      
     end
     love.graphics.rectangle("fill", 100 + (towerNum-1)*200,heightOffset,150,20)
