@@ -18,6 +18,7 @@ function love.load()
   table.insert(towers[1], 1)
 
   mouse = { x = 0, y = 0 }  
+  
 end
 
 function love.update(dt)
@@ -52,7 +53,17 @@ function drawDisc(size, tower, heightOffset)
   
   if mouse.x > centerOfTower - ( discWidth / 2) and mouse.x <  centerOfTower - ( discWidth / 2) + discWidth and
     mouse.y > heightOffset and mouse.y < heightOffset + discHeight then
-    love.graphics.setColor(0,0,255,255) 
+      
+    topDisk = true
+    for _, disc in ipairs(towers[tower]) do
+      topDisk = (disc == size)
+    end
+      
+    if topDisk then
+      love.graphics.setColor(0,0,255,255) 
+    else
+      love.graphics.setColor(255,0,0,255)
+    end
   else
     love.graphics.setColor(255,255,255,255)
   end
