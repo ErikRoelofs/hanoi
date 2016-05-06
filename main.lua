@@ -34,7 +34,11 @@ end
 function makeDiscs(amount)
   local i = amount
   while i > 0 do
-    local disc = { size = i }
+    local disc = { 
+      size = i, 
+      width = i*10+40, 
+      height = i*3+10 
+    }
     table.insert(towers[1], disc)
     i = i - 1
   end
@@ -82,9 +86,7 @@ function love.draw()
     
     if discPickedUp then
       love.graphics.setColor(discBaseColor)
-      local discWidth, discHeight  = discDimensions(discPickedUp)
-    
-      love.graphics.rectangle("fill", mouse.x - discWidth / 2, mouse.y - discHeight / 2, discWidth, discHeight)
+      love.graphics.rectangle("fill", mouse.x - discPickedUp.width / 2, mouse.y - discPickedUp.height / 2, discPickedUp.width, discPickedUp.height)
     end
   end
 end
@@ -120,14 +122,13 @@ function hoversTower(towerNum)
 end
 
 function drawDisc(disc, tower, heightOffset)
-  love.graphics.setColor(discBaseColor)
-  local discWidth, discHeight = discDimensions(disc)
+  love.graphics.setColor(discBaseColor)  
   local centerOfTower = (tower-1)*200 + 175
-  heightOffset = heightOffset - discHeight - 1
+  heightOffset = heightOffset - disc.height - 1
   
   if mode == "select" then
-    if mouse.x > centerOfTower - ( discWidth / 2) and mouse.x <  centerOfTower - ( discWidth / 2) + discWidth
-      and mouse.y > heightOffset and mouse.y < heightOffset + discHeight then        
+    if mouse.x > centerOfTower - ( disc.width / 2) and mouse.x <  centerOfTower - ( disc.width / 2) + disc.width
+      and mouse.y > heightOffset and mouse.y < heightOffset + disc.height then        
       if isTopDisk(disc, tower) then
         love.graphics.setColor(discGoodHighlightColor)
         discHovered = disc
@@ -138,7 +139,7 @@ function drawDisc(disc, tower, heightOffset)
       love.graphics.setColor(discBaseColor)
     end
   end
-  love.graphics.rectangle("fill", centerOfTower - ( discWidth / 2), heightOffset, discWidth, discHeight)
+  love.graphics.rectangle("fill", centerOfTower - ( disc.width / 2), heightOffset, disc.width, disc.height)
   
   return heightOffset
 end
@@ -172,8 +173,4 @@ end
 
 function gameIsWon()
   return #towers[3] == numDiscs
-end
-
-function discDimensions(disc)
-  return disc.size * 10 + 40, disc.size *3 + 10
 end
