@@ -12,7 +12,7 @@ function love.load()
     love.graphics.rectangle("fill", self.x + 70,100,10,400)
 
     for _, disc in ipairs(self.discs) do
-      heightOffset = drawDisc(disc, self, heightOffset)
+      heightOffset = disc:draw()
     end
   end
   
@@ -37,6 +37,25 @@ function love.load()
     end
     return valid  
   end
+  
+  local towerAddDisc = function(self, disc)      
+    local height = 500
+    for _, currentDisc in ipairs(self.discs) do
+      height = height - currentDisc.height - 1
+    end
+    height = height - (disc.height / 2) - 1
+    disc.x = self.x + 75
+    disc.y = height
+    table.insert(self.discs, disc)
+  end
+
+  local isTopDisc = function(self, targetDisc)
+    local topDisc = true
+    for _, disc in ipairs(self.discs) do
+      topDisc = (disc == targetDisc)
+    end
+    return topDisc
+  end
 
   towerBaseColor = {150,75,75,255}
   towerGoodHighlightColor = {150,75,255,255}
@@ -46,31 +65,23 @@ function love.load()
   discGoodHighlightColor = {75,150,255,255}
   discBadHighlightColor = {255,150,75,255}
   
+  local function makeTower(num)
+    return {
+      discs = {},
+      x = 100 + (200 * (num-1)),
+      isHovered = isTowerHovered,
+      draw = drawTower,
+      color = towerBaseColor,
+      isValidDrop = isTowerValidDrop,
+      addDisc = towerAddDisc,
+      isTopDisc = isTopDisc
+    }    
+  end
+  
   towers = {
-    {
-      discs = {},
-      x = 100,
-      isHovered = isTowerHovered,
-      draw = drawTower,
-      color = towerBaseColor,
-      isValidDrop = isTowerValidDrop
-    },
-    {
-      discs = {},
-      x = 300,
-      isHovered = isTowerHovered,
-      draw = drawTower,
-      color = towerBaseColor,
-      isValidDrop = isTowerValidDrop
-    },
-    {
-      discs = {},
-      x = 500,
-      isHovered = isTowerHovered,
-      draw = drawTower,
-      color = towerBaseColor,
-      isValidDrop = isTowerValidDrop
-    }
+    makeTower(1),
+    makeTower(2),
+    makeTower(3),
   }
   
   numDiscs = 8
@@ -90,13 +101,30 @@ end
 
 function makeDiscs(amount)
   local i = amount
+  local drawDisk = function(self)
+    love.graphics.setColor(self.color)  
+    local centerOfTower = self.x    
+    love.graphics.rectangle("fill", self.x - ( self.width / 2), self.y - (self.height / 2), self.width, self.height)    
+  end
+  local isHovered = function(self, x, y)
+    if x > self.x - ( self.width / 2) and x <  self.x + ( self.width / 2)
+      and y > self.y - ( self.height / 2 ) and y < self.y + (self.height / 2) then        
+      return true
+    end
+    return false
+  end
   while i > 0 do
     local disc = { 
-      size = i, 
-      width = i*10+40, 
-      height = i*3+10 
-    }
-    table.insert(towers[1].discs, disc)
+      size = i,
+      width = i*10+40,
+      height = i*3+10,
+      color = discBaseColor,
+      draw = drawDisk,
+      x = 0,
+      y = 0,
+      isHovered = isHovered
+    }    
+    towers[1]:addDisc(disc)
     i = i - 1
   end
 end
@@ -110,8 +138,26 @@ function love.update(dt)
   
   for num, tower in ipairs(towers) do
     tower.color = towerBaseColor
+    for _, disc in ipairs(tower.discs) do
+      disc.color = discBaseColor
+    end
   end
   
+  if mode == "select" then
+    for num, tower in ipairs(towers) do
+      for _, disc in ipairs(tower.discs) do
+        if disc:isHovered(mouse.x, mouse.y) then
+          if tower:isTopDisc(disc) then
+            disc.color = discGoodHighlightColor
+            discHovered = disc
+          else
+            disc.color = discBadHighlightColor
+          end
+        end
+      end
+    end
+  end
+    
   if mode == "place" then
     for num, tower in ipairs(towers) do
       if tower:isHovered(mouse.x, mouse.y) then
@@ -124,6 +170,12 @@ function love.update(dt)
       end
     end
   end
+  
+  if discPickedUp then
+    discPickedUp.x = mouse.x
+    discPickedUp.y = mouse.y
+  end
+  
 end
 
 function love.mousepressed(x,y,button)
@@ -140,14 +192,15 @@ function pickupDisc(discToPick)
   for towerNum, tower in ipairs(towers) do
     for key, disc in ipairs(tower.discs) do
       if disc == discToPick then
-        discPickedUp = table.remove(towers[towerNum].discs, key)        
+        discPickedUp = table.remove(towers[towerNum].discs, key)
+        discPickedUp.color = discBaseColor
       end
     end
   end
 end
 
 function dropDisc()
-  table.insert(towers[towerHovered].discs, discPickedUp)
+  towers[towerHovered]:addDisc(discPickedUp)
   discPickedUp = nil
 end
 
@@ -161,41 +214,9 @@ function love.draw()
     towers[3]:draw()
     
     if discPickedUp then
-      love.graphics.setColor(discBaseColor)
-      love.graphics.rectangle("fill", mouse.x - discPickedUp.width / 2, mouse.y - discPickedUp.height / 2, discPickedUp.width, discPickedUp.height)
+      discPickedUp:draw()
     end
   end
-end
-
-function drawDisc(disc, tower, heightOffset)
-  love.graphics.setColor(discBaseColor)  
-  local centerOfTower = tower.x + 75
-  heightOffset = heightOffset - disc.height - 1
-  
-  if mode == "select" then
-    if mouse.x > centerOfTower - ( disc.width / 2) and mouse.x <  centerOfTower - ( disc.width / 2) + disc.width
-      and mouse.y > heightOffset and mouse.y < heightOffset + disc.height then        
-      if isTopDisk(disc, tower) then
-        love.graphics.setColor(discGoodHighlightColor)
-        discHovered = disc
-      else
-        love.graphics.setColor(discBadHighlightColor)
-      end
-    else
-      love.graphics.setColor(discBaseColor)
-    end
-  end
-  love.graphics.rectangle("fill", centerOfTower - ( disc.width / 2), heightOffset, disc.width, disc.height)
-  
-  return heightOffset
-end
-
-function isTopDisk(targetDisc, tower)
-  local topDisk = true
-  for _, disc in ipairs(tower.discs) do
-    topDisk = (disc == targetDisc)
-  end
-  return topDisk
 end
 
 function gameIsWon()
