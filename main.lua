@@ -6,13 +6,11 @@ function love.load()
   local drawTower = function(self)
     love.graphics.setColor(self.color)
     
-    local heightOffset = 500
-    
-    love.graphics.rectangle("fill", self.x,heightOffset,150,20)
+    love.graphics.rectangle("fill", self.x,500,150,20)
     love.graphics.rectangle("fill", self.x + 70,100,10,400)
 
     for _, disc in ipairs(self.discs) do
-      heightOffset = disc:draw()
+      disc:draw()
     end
   end
   
