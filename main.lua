@@ -3,9 +3,15 @@ if debug then require("mobdebug").start() end
 
 function love.load()
   towers = {
-    {},
-    {},
-    {}
+    {
+      discs = {},
+    },
+    {
+      discs = {},
+    },
+    {
+      discs = {},
+    }
   }
   
   towerBaseColor = {150,75,75,255}
@@ -39,7 +45,7 @@ function makeDiscs(amount)
       width = i*10+40, 
       height = i*3+10 
     }
-    table.insert(towers[1], disc)
+    table.insert(towers[1].discs, disc)
     i = i - 1
   end
 end
@@ -60,17 +66,17 @@ function love.mousepressed(x,y,button)
 end
 
 function pickupDisc(discToPick)
-  for tower, discs in ipairs(towers) do
-    for key, disc in ipairs(discs) do
+  for towerNum, tower in ipairs(towers) do
+    for key, disc in ipairs(tower.discs) do
       if disc == discToPick then
-        discPickedUp = table.remove(towers[tower], key)        
+        discPickedUp = table.remove(towers[towerNum].discs, key)        
       end
     end
   end
 end
 
 function dropDisc()
-  table.insert(towers[towerHovered], discPickedUp)
+  table.insert(towers[towerHovered].discs, discPickedUp)
   discPickedUp = nil
 end
 
@@ -104,7 +110,7 @@ function drawTower(towerNum)
     love.graphics.rectangle("fill", 100 + (towerNum-1)*200,heightOffset,150,20)
     love.graphics.rectangle("fill", 170 + (towerNum-1)*200,100,10,400)      
     
-    for _, disc in ipairs(towers[towerNum]) do
+    for _, disc in ipairs(towers[towerNum].discs) do
       heightOffset = drawDisc(disc, towerNum, heightOffset)
     end
     
@@ -146,7 +152,7 @@ end
 
 function isTopDisk(targetDisc, tower)
   local topDisk = true
-  for _, disc in ipairs(towers[tower]) do
+  for _, disc in ipairs(towers[tower].discs) do
     topDisk = (disc == targetDisc)
   end
   return topDisk
@@ -163,7 +169,7 @@ end
 
 function isDropValid(discPicked, towerNum)
   local valid = true
-  for _, disc in ipairs(towers[towerNum]) do          
+  for _, disc in ipairs(towers[towerNum].discs) do          
     if disc.size < discPicked.size then
       valid = false
     end
@@ -172,5 +178,5 @@ function isDropValid(discPicked, towerNum)
 end
 
 function gameIsWon()
-  return #towers[3] == numDiscs
+  return #towers[3].discs == numDiscs
 end
