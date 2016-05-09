@@ -2,18 +2,42 @@ if arg[#arg] == "-debug" then debug = true else debug = false end
 if debug then require("mobdebug").start() end
 
 function love.load()
-  towers = {
-    {
-      discs = {},
-    },
-    {
-      discs = {},
-    },
-    {
-      discs = {},
-    }
-  }
   
+  local drawTower = function(self)
+    love.graphics.setColor(self.color)
+    
+    local heightOffset = 500
+    
+    love.graphics.rectangle("fill", self.x,heightOffset,150,20)
+    love.graphics.rectangle("fill", self.x + 70,100,10,400)
+
+    for _, disc in ipairs(self.discs) do
+      heightOffset = drawDisc(disc, self, heightOffset)
+    end
+  end
+  
+  local isTowerHovered = function(self, x, y)
+    if x > self.x and x < self.x + 150 
+      and y > 500 and y < 500 + 20 then                  
+      return true
+    end      
+    if x > self.x + 70 and x < self.x + 70 + 10
+      and y > 100 and y < 100 + 400 then
+      return true
+    end
+    return false
+  end
+  
+  local isTowerValidDrop = function(self, discPicked)
+    local valid = true
+    for _, disc in ipairs(self.discs) do
+      if disc.size < discPicked.size then
+        valid = false
+      end
+    end
+    return valid  
+  end
+
   towerBaseColor = {150,75,75,255}
   towerGoodHighlightColor = {150,75,255,255}
   towerBadHighlightColor = {255,75,75,255}
@@ -21,7 +45,34 @@ function love.load()
   discBaseColor = {75,150,75,255}
   discGoodHighlightColor = {75,150,255,255}
   discBadHighlightColor = {255,150,75,255}
-
+  
+  towers = {
+    {
+      discs = {},
+      x = 100,
+      isHovered = isTowerHovered,
+      draw = drawTower,
+      color = towerBaseColor,
+      isValidDrop = isTowerValidDrop
+    },
+    {
+      discs = {},
+      x = 300,
+      isHovered = isTowerHovered,
+      draw = drawTower,
+      color = towerBaseColor,
+      isValidDrop = isTowerValidDrop
+    },
+    {
+      discs = {},
+      x = 500,
+      isHovered = isTowerHovered,
+      draw = drawTower,
+      color = towerBaseColor,
+      isValidDrop = isTowerValidDrop
+    }
+  }
+  
   numDiscs = 8
   makeDiscs(numDiscs)
   
@@ -51,8 +102,28 @@ function makeDiscs(amount)
 end
 
 function love.update(dt)
+  
+  resetHover()
+  
   mouse.x = love.mouse.getX()
   mouse.y = love.mouse.getY()
+  
+  for num, tower in ipairs(towers) do
+    tower.color = towerBaseColor
+  end
+  
+  if mode == "place" then
+    for num, tower in ipairs(towers) do
+      if tower:isHovered(mouse.x, mouse.y) then
+        if tower:isValidDrop(discPickedUp) then
+          towerHovered = num        
+          tower.color = towerGoodHighlightColor
+        else
+          tower.color = towerBadHighlightColor
+        end
+      end
+    end
+  end
 end
 
 function love.mousepressed(x,y,button)
@@ -84,11 +155,10 @@ function love.draw()
   
   if gameIsWon() then
     love.graphics.print("You won the game.", 350,300)
-  else
-    resetHover()
-    drawTower(1)
-    drawTower(2)
-    drawTower(3)  
+  else    
+    towers[1]:draw()
+    towers[2]:draw()
+    towers[3]:draw()
     
     if discPickedUp then
       love.graphics.setColor(discBaseColor)
@@ -97,39 +167,9 @@ function love.draw()
   end
 end
 
-function drawTower(towerNum)    
-    love.graphics.setColor(towerBaseColor)
-    
-    local heightOffset = 500
-    
-    if mode == "place" then
-      if hoversTower(towerNum) then
-        handleTowerHover(discPickedUp, towerNum)      
-      end
-    end
-    love.graphics.rectangle("fill", 100 + (towerNum-1)*200,heightOffset,150,20)
-    love.graphics.rectangle("fill", 170 + (towerNum-1)*200,100,10,400)      
-    
-    for _, disc in ipairs(towers[towerNum].discs) do
-      heightOffset = drawDisc(disc, towerNum, heightOffset)
-    end
-    
-end
-
-function hoversTower(towerNum)
-  if mouse.x > 100 + (towerNum-1)*200 and mouse.x < 100 + (towerNum-1)*200 + 150 
-    and mouse.y > 500 and mouse.y < 500 + 20 then                  
-    return true
-  end      
-  if mouse.x > 170 + (towerNum-1)*200 and mouse.x < 170 + (towerNum-1)*200 + 10 
-    and mouse.y > 100 and mouse.y < 100 + 400 then        
-    return true
-  end        
-end
-
 function drawDisc(disc, tower, heightOffset)
   love.graphics.setColor(discBaseColor)  
-  local centerOfTower = (tower-1)*200 + 175
+  local centerOfTower = tower.x + 75
   heightOffset = heightOffset - disc.height - 1
   
   if mode == "select" then
@@ -152,29 +192,10 @@ end
 
 function isTopDisk(targetDisc, tower)
   local topDisk = true
-  for _, disc in ipairs(towers[tower].discs) do
+  for _, disc in ipairs(tower.discs) do
     topDisk = (disc == targetDisc)
   end
   return topDisk
-end
-
-function handleTowerHover(discPickedUp, towerNum)
-  if isDropValid(discPickedUp, towerNum) then
-    towerHovered = towerNum
-    love.graphics.setColor(towerGoodHighlightColor)
-  else
-    love.graphics.setColor(towerBadHighlightColor)
-  end  
-end
-
-function isDropValid(discPicked, towerNum)
-  local valid = true
-  for _, disc in ipairs(towers[towerNum].discs) do          
-    if disc.size < discPicked.size then
-      valid = false
-    end
-  end
-  return valid
 end
 
 function gameIsWon()
