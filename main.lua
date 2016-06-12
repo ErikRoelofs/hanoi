@@ -3,6 +3,8 @@ if debug then require("mobdebug").start() end
 
 function love.load()
   
+  love.window.setTitle( "Towers of Hanoi" )
+  
   local drawTower = function(self)
     love.graphics.setColor(self.color)
     
